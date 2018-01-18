@@ -1,4 +1,4 @@
-# soundcloud-to-rss
+# SoundCloud2RSS
 
 ### Simple script outputting the RSS url for some [SoundCloud](https://soundcloud.com/) channels.
 
@@ -8,3 +8,6 @@
 ```bash
 python3 s2rss.py studio404 paris
 ```
+
+
+######	dependencies: python3, BeautifulSoup4
