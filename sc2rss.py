@@ -68,6 +68,7 @@ else:
 		user_index = int( input())
 	sc_user_url = BASE_URL + results[user_index].url
 
+#To get the RSS url, we only need to read some user id number from the user page source
 sc_user_soup = scrapper( sc_user_url)
 try:
 	sc_userid = next(re.finditer("users:(\d+)", str(sc_user_soup))).group(1)
