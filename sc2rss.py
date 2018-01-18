@@ -9,6 +9,7 @@ from time import time
 
 BASE_URL = "https://soundcloud.com/"
 RSS_FORMAT = "http://feeds.soundcloud.com/users/soundcloud:users:{}/sounds.rss"
+COPY_TO_CLIPBOARD = True
 
 class PageScrapper():
 	def __init__(self, delay_between_queries=0):
@@ -75,4 +76,12 @@ try:
 except StopIteration:
 	print( "Problem reading Soundcloud user ID")
 	exit()
-print( "\n\t%s" %(RSS_FORMAT.format(sc_userid)))
+else:
+	rss_url = RSS_FORMAT.format(sc_userid)
+	print( "\n\t%s" % rss_url)
+	if COPY_TO_CLIPBOARD:
+		try:
+			import pyperclip
+			pyperclip.copy( rss_url)
+		except:
+			pass
