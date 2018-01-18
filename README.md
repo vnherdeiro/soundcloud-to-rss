@@ -1,6 +1,6 @@
 # SoundCloud2RSS
 
-### Simple script outputting the RSS url for some [SoundCloud](https://soundcloud.com/) channels. This allows to import soundcloud content into media players with podcast support (such as [VLC](https://www.videolan.org/vlc/))
+### Simple script outputting the RSS url for some [SoundCloud](https://soundcloud.com/) channels. This allows to import soundcloud content into media players with podcast support (such as [VLC](https://www.videolan.org/vlc/)).
 
 
 #### Works by passing search keywords as arguements. For instance:
