@@ -11,7 +11,10 @@ BASE_URL = "https://soundcloud.com/"
 RSS_FORMAT = "http://feeds.soundcloud.com/users/soundcloud:users:{}/sounds.rss"
 COPY_TO_CLIPBOARD = True
 
-class PageScrapper():
+class WebpageScrapper():
+	"""
+	Object reading web pages from URL and outputting them as BeautifulSoup objects
+	"""
 	def __init__(self, delay_between_queries=0):
 		self.opener = urllib.request.build_opener()
 		self.opener.addheaders = [('User-agent', 'Mozilla/5.0')]
@@ -45,11 +48,10 @@ class ResultItem:
 if len(argv) > 1:
 	search_items = " ".join( argv[1:])
 else:
-	print("What soundcloud feed are you looking for?")
+	print("Which soundcloud feed are you looking for?")
 	search_items = input()
 search_url = SearchUrl( search_items)
-scrapper = PageScrapper()
-
+scrapper = WebpageScrapper()
 
 
 search_soup = scrapper( search_url)
@@ -66,7 +68,10 @@ else:
 	user_index = None
 	print("\nWhich one is it? (enter index)")
 	while not user_index in results:
-		user_index = int( input())
+		try:
+			user_index = int( input())
+		except ValueError:
+			user_index = None
 	sc_user_url = BASE_URL + results[user_index].url
 
 #To get the RSS url, we only need to read some user id number from the user page source
