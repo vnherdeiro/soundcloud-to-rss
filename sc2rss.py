@@ -83,7 +83,7 @@ except StopIteration:
 	exit()
 else:
 	rss_url = RSS_FORMAT.format(sc_userid)
-	print( "\n\t%s" % rss_url)
+	print( "\n\t%s\n" % rss_url)
 	if COPY_TO_CLIPBOARD:
 		try:
 			import pyperclip
