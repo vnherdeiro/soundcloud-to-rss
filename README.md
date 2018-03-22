@@ -9,5 +9,9 @@
 python3 s2rss.py studio404 paris
 ```
 
+#### Or passing the keywords in program instance:
 
+![](tutorial1.png)
+![](tutorial2.png)
+![](tutorial3.png)
 ######	main dependencies: python3, BeautifulSoup4, pyperclip

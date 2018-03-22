@@ -11,9 +11,9 @@ BASE_URL = "https://soundcloud.com/"
 RSS_FORMAT = "http://feeds.soundcloud.com/users/soundcloud:users:{}/sounds.rss"
 COPY_TO_CLIPBOARD = True
 
-class WebpageScrapper():
+class WebpageScraper:
 	"""
-	Object reading web pages from URL and outputting them as BeautifulSoup objects
+	Object reading web pages from URL and outputting them as a BeautifulSoup soup object
 	"""
 	def __init__(self, delay_between_queries=0):
 		self.opener = urllib.request.build_opener()
@@ -21,21 +21,15 @@ class WebpageScrapper():
 		self.lastQuery = -float("inf")
 		self.delay_between_queries = delay_between_queries
 	def readUrl( self, url_):
-		presentTime = time() - self.lastQuery - self.delay_between_queries
-		if presentTime < 0:
-			sleep( abs(presentTime))
-		inData = self.opener.open(url_)
-		content = inData.read()
+		waiting_time = -(time() - self.lastQuery - self.delay_between_queries)
+		if waiting_time > 0:
+			sleep( waitingTime)
+		webpage_handle = self.opener.open(url_)
+		webpage_content = webpage_handle.read()
 		self.lastQuery = time()
-		return bs(content, "html.parser")
+		return bs(webpage_content, "html.parser")
 	def __call__( self, url_):
 		return self.readUrl( url_)
-
-def SearchUrl( search_items):
-	"""
-	Returns the soundcloud search url from search inputs
-	"""
-	return BASE_URL + "search/people?q=" + urllib.parse.quote_plus(search_items)
 
 class ResultItem:
 	def __init__(self, text, url):
@@ -43,50 +37,74 @@ class ResultItem:
 		self.url = url
 	def __repr__(self):
 		return "<search result for %s>" %self.text
-	
 
-if len(argv) > 1:
-	search_items = " ".join( argv[1:])
-else:
-	print("Which soundcloud feed are you looking for?")
-	search_items = input()
-search_url = SearchUrl( search_items)
-scrapper = WebpageScrapper()
+class SearchSoundCloud:
+	def __init__(self, search_arguments=[], scraper=WebpageScraper()):
+		self.scraper = scraper
+		if search_arguments: #search arguments passed as cmd line arguments
+			search_query = " ".join( search_arguments)
+		else: #search arguments passed by user kb input
+			print("Which soundcloud feed are you looking for?")
+			search_query = input()
+		search_url = self.SearchUrl( search_query)
+		self.search_soup = scraper( search_url)
+		self.feed_url = None
 
-
-search_soup = scrapper( search_url)
-try:
-	research_results = search_soup.find_all("ul")[1].find_all("a")
-	results = {index: ResultItem(x.text, x["href"][1:]) for index, x in enumerate(research_results,start=1)}
-except IndexError:
-	print( "Search gave no results..")
-	exit()
-else:
-	print()
-	for result_index, result in results.items():
-		print( "%2d:  %s" %(result_index, result.text))
-	user_index = None
-	print("\nWhich one is it? (enter index)")
-	while not user_index in results:
+	def SearchPageToFeed(self):
+		"""
+		Parses the soundcloud search result page, offers choices to user and translates choice to feed url
+		"""
 		try:
-			user_index = int( input())
-		except ValueError:
-			user_index = None
-	sc_user_url = BASE_URL + results[user_index].url
+			research_results = self.search_soup.find_all("ul")[1].find_all("a")
+			results = {index: ResultItem(x.text, x["href"][1:]) for index, x in enumerate(research_results,start=1)}
+		except IndexError:
+			print( "Search gave no results..")
+			exit()
+		else:
+			print()
+			for result_index, result in results.items():
+				print( "%2d:  %s" %(result_index, result.text))
+			user_input_index = None
+			print("\nWhich one is it? (enter index)")
+			while not user_input_index in results:
+				try:
+					user_input_index = int( input())
+				except ValueError:
+					user_input_index = None
+			self.feed_url = BASE_URL + results[user_input_index].url
 
-#To get the RSS url, we only need to read some user id number from the user page source
-sc_user_soup = scrapper( sc_user_url)
-try:
-	sc_userid = next(re.finditer("users:(\d+)", str(sc_user_soup))).group(1)
-except StopIteration:
-	print( "Problem reading Soundcloud user ID")
-	exit()
-else:
-	rss_url = RSS_FORMAT.format(sc_userid)
-	print( "\n\t%s\n" % rss_url)
-	if COPY_TO_CLIPBOARD:
+	def FeedToUrl(self):
+		"""
+		Reads the RSS url from SoundCloud feed mainpage
+		"""
+		sc_user_soup = self.scraper( self.feed_url)
 		try:
-			import pyperclip
-			pyperclip.copy( rss_url)
-		except:
-			pass
+			sc_userid = next(re.finditer("users:(\d+)", str(sc_user_soup))).group(1)
+		except StopIteration:
+			print( "Problem reading Soundcloud user ID")
+		else:
+			rss_url = RSS_FORMAT.format(sc_userid)
+			print()
+			print( "-"*100)
+			print( "{:^100}".format(rss_url))
+			print( "-"*100)
+			if COPY_TO_CLIPBOARD:
+				try:
+					import pyperclip
+					pyperclip.copy( rss_url)
+				except:
+					pass
+
+	@staticmethod
+	def SearchUrl( search_items):
+		"""
+		Returns the soundcloud search url from search inputs
+		"""
+		return BASE_URL + "search/people?q=" + urllib.parse.quote_plus(search_items)
+
+if __name__ == "__main__":
+	search_arguments = argv[1:]
+	scraper = WebpageScraper()
+	feed_search = SearchSoundCloud(search_arguments, scraper)
+	feed_search.SearchPageToFeed()
+	feed_search.FeedToUrl()
