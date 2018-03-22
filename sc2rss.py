@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup as bs
 from time import time
 
 
+
 BASE_URL = "https://soundcloud.com/"
 RSS_FORMAT = "http://feeds.soundcloud.com/users/soundcloud:users:{}/sounds.rss"
 COPY_TO_CLIPBOARD = True
@@ -94,6 +95,7 @@ class SearchSoundCloud:
 					pyperclip.copy( rss_url)
 				except:
 					pass
+			return rss_url
 
 	@staticmethod
 	def SearchUrl( search_items):
@@ -101,6 +103,7 @@ class SearchSoundCloud:
 		Returns the soundcloud search url from search inputs
 		"""
 		return BASE_URL + "search/people?q=" + urllib.parse.quote_plus(search_items)
+
 
 if __name__ == "__main__":
 	search_arguments = argv[1:]
