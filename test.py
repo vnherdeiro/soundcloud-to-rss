@@ -19,8 +19,8 @@ class Test_sc2rss(unittest.TestCase):
 			result_url = feed_search.FeedToUrl()
 		expected_url = "http://feeds.soundcloud.com/users/soundcloud:users:26187934/sounds.rss"
 		self.assertEqual( result_url, expected_url)
-		
-		#optional test if has been pasted to COPY_TO_CLIPBOARD
+
+		#optionally tests if the url has been pasted succesfully to clipboard
 		try:
 			import pyperclip
 		except ImportError:
