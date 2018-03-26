@@ -5,26 +5,25 @@ from unittest.mock import patch
 from io import StringIO
 from soundcloud_search import SearchSoundCloud
 
-def FakeScrapper_gen():
+
+#generator mocking the web scraping by passing web page contents stored on disk
+def FakeScraper():
 	with open("tests_input/search_content.dat","rb") as f:
 		yield f.read()
 	with open("tests_input/feed_content.dat","rb") as f:
 		yield f.read()
-web_content_generator = FakeScrapper_gen()
-def FakeScrapper(*args, **kwargs):
-	return next(web_content_generator)
 
 class Test_sc2rss(unittest.TestCase):
 	"""
 	Tests for sc2rss:
 		- integration test to check if the program is still able to parse the SoundCloud result page and extract the RSS url information
-		- unit test with data from scrapper mocked and fed from files
+		- unit test with data from scraper mocked and fed from files
 	"""
 
 	#unit test
 	@patch("builtins.input", return_value="1")
-	@patch( "http.client.HTTPResponse.read", side_effect=FakeScrapper)
-	def test_mock_scrapper(self, *args, **kwargs):
+	@patch( "http.client.HTTPResponse.read", side_effect=FakeScraper())
+	def test_mock_scraper(self, *args, **kwargs):
 		search_arguments = ["studio404", "paris"]
 		with patch('sys.stdout', new=StringIO()) as silence_stdout:
 			feed_search = SearchSoundCloud(search_arguments)

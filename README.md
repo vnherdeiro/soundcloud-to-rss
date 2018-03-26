@@ -14,4 +14,8 @@ python3 s2rss.py studio404 paris
 ![](tutorial1.png)
 ![](tutorial2.png)
 ![](tutorial3.png)
+
+
+##### Tests in `tests.py`: unit tests for the parsing (exhaustive), and integration (to SoundCloud) test
+
 ######	main dependencies: python3, BeautifulSoup4, pyperclip
