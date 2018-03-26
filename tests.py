@@ -21,14 +21,14 @@ class Test_sc2rss(unittest.TestCase):
 	"""
 
 	#unit test
-	@patch("builtins.input", return_value="1")
-	@patch( "http.client.HTTPResponse.read", side_effect=FakeScraper())
+	@patch("builtins.input", return_value="1") #mocking the user keyboard input when asked to pick a feed
+	@patch( "http.client.HTTPResponse.read", side_effect=FakeScraper()) #mocking the soundcloud webpage request
+	@patch( "sys.stdout", new=StringIO()) #silencing the stdout
 	def test_mock_scraper(self, *args, **kwargs):
 		search_arguments = ["studio404", "paris"]
-		with patch('sys.stdout', new=StringIO()) as silence_stdout:
-			feed_search = SearchSoundCloud(search_arguments)
-			feed_search.SearchPageToFeed()
-			result_url = feed_search.FeedToUrl()
+		feed_search = SearchSoundCloud(search_arguments)
+		feed_search.SearchPageToFeed()
+		result_url = feed_search.FeedToUrl()
 		expected_url = "http://feeds.soundcloud.com/users/soundcloud:users:26187934/sounds.rss"
 		self.assertEqual( result_url, expected_url)
 
@@ -42,12 +42,12 @@ class Test_sc2rss(unittest.TestCase):
 
 	#integration test
 	@patch("builtins.input", return_value="1")
+	@patch( "sys.stdout", new=StringIO())
 	def test_sc2rss_integration(self, *args, **kwargs):
 		search_arguments = ["studio404", "paris"]
-		with patch('sys.stdout', new=StringIO()) as silence_stdout:
-			feed_search = SearchSoundCloud(search_arguments)
-			feed_search.SearchPageToFeed()
-			result_url = feed_search.FeedToUrl()
+		feed_search = SearchSoundCloud(search_arguments)
+		feed_search.SearchPageToFeed()
+		result_url = feed_search.FeedToUrl()
 		expected_url = "http://feeds.soundcloud.com/users/soundcloud:users:26187934/sounds.rss"
 		self.assertEqual( result_url, expected_url)
 
